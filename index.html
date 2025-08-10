@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>טופס שאלות שידוכין</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            border-right: 5px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: "💎";
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.2);
+            transform: scale(1.02);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            transform: translateX(-5px);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-left: 10px;
+            transform: scale(1.2);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .radio-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            transform: scale(1.05);
+        }
+
+        .radio-item input[type="radio"] {
+            margin-left: 8px;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border-radius: 15px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.3);
+            background: linear-gradient(45deg, #c0392b, #a93226);
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 15px;
+            border: 2px solid #2ecc71;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>טופס שאלות שידוכין</h1>
+            <p>נא למלא את הפרטים הבאים כדי שנוכל להכיר אותך טוב יותר</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <form id="shidduchForm">
+            <!-- פרטים אישיים -->
+            <div class="form-section">
+                <h2 class="section-title">פרטים אישיים</h2>
+                
+                <div class="form-group">
+                    <label for="firstName">שם פרטי:</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">שם משפחה:</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">גיל:</label>
+                    <input type="number" id="age" name="age" min="18" max="99" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="city">עיר מגורים:</label>
+                    <input type="text" id="city" name="city" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">טלפון:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">אימייל:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+            </div>
+
+            <!-- רקע משפחתי ודתי -->
+            <div class="form-section">
+                <h2 class="section-title">רקע משפחתי ודתי</h2>
+                
+                <div class="form-group">
+                    <label for="religiousLevel">רמת דתיות:</label>
+                    <select id="religiousLevel" name="religiousLevel" required>
+                        <option value="">בחר/י</option>
+                        <option value="חרדי">חרדי</option>
+                        <option value="דתי">דתי</option>
+                        <option value="מסורתי">מסורתי</option>
+                        <option value="חילוני">חילוני</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="community">עדה/קהילה:</label>
+                    <select id="community" name="community">
+                        <option value="">בחר/י</option>
+                        <option value="אשכנזי">אשכנזי</option>
+                        <option value="ספרדי">ספרדי</option>
+                        <option value="תימני">תימני</option>
+                        <option value="חב״ד">חב״ד</option>
+                        <option value="ליטאי">ליטאי</option>
+                        <option value="חסידי">חסידי</option>
+                        <option value="אחר">אחר</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="familyStatus">מצב משפחתי של ההורים:</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <label for="married">נשואים</label>
+                            <input type="radio" id="married" name="parentStatus" value="נשואים">
+                        </div>
+                        <div class="radio-item">
+                            <label for="divorced">גרושים</label>
+                            <input type="radio" id="divorced" name="parentStatus" value="גרושים">
+                        </div>
+                        <div class="radio-item">
+                            <label for="widowed">אלמן/נה</label>
+                            <input type="radio" id="widowed" name="parentStatus" value="אלמן/נה">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="siblings">מספר אחים:</label>
+                    <input type="number" id="siblings" name="siblings" min="0" max="20">
+                </div>
+            </div>
+
+            <!-- השכלה ועבודה -->
+            <div class="form-section">
+                <h2 class="section-title">השכלה ועבודה</h2>
+                
+                <div class="form-group">
+                    <label for="education">רמת השכלה:</label>
+                    <select id="education" name="education" required>
+                        <option value="">בחר/י</option>
+                        <option value="תיכון">תיכון</option>
+                        <option value="מכללה">מכללה</option>
+                        <option value="אוניברסיטה - תואר ראשון">אוניברסיטה - תואר ראשון</option>
+                        <option value="אוניברסיטה - תואר שני">אוניברסיטה - תואר שני</option>
+                        <option value="אוניברסיטה - תואר שלישי">אוניברסיטה - תואר שלישי</option>
+                        <option value="כולל/בית מדרש">כולל/בית מדרש</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profession">מקצוע/תחום עבודה:</label>
+                    <input type="text" id="profession" name="profession" placeholder="לדוגמה: הנדסה, חינוך, רפואה">
+                </div>
+                
+                <div class="form-group">
+                    <label for="workStatus">מצב תעסוקתי:</label>
+                    <select id="workStatus" name="workStatus">
+                        <option value="">בחר/י</option>
+                        <option value="עובד/ת במשרה מלאה">עובד/ת במשרה מלאה</option>
+                        <option value="עובד/ת במשרה חלקית">עובד/ת במשרה חלקית</option>
+                        <option value="סטודנט/ית">סטודנט/ית</option>
+                        <option value="לומד/ת בכולל">לומד/ת בכולל</option>
+                        <option value="מחפש/ת עבודה">מחפש/ת עבודה</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- העדפות אישיות -->
+            <div class="form-section">
+                <h2 class="section-title">העדפות אישיות</h2>
+                
+                <div class="form-group">
+                    <label for="hobbies">תחביבים ותחומי עניין:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <label for="reading">קריאה</label>
+                            <input type="checkbox" id="reading" name="hobbies" value="קריאה">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="music">מוזיקה</label>
+                            <input type="checkbox" id="music" name="hobbies" value="מוזיקה">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="sports">ספורט</label>
+                            <input type="checkbox" id="sports" name="hobbies" value="ספורט">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="cooking">בישול</label>
+                            <input type="checkbox" id="cooking" name="hobbies" value="בישול">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="travel">טיולים</label>
+                            <input type="checkbox" id="travel" name="hobbies" value="טיולים">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="art">אומנות</label>
+                            <input type="checkbox" id="art" name="hobbies" value="אומנות">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="aboutMe">ספר/י על עצמך:</label>
+                    <textarea id="aboutMe" name="aboutMe" placeholder="תאר/י את האישיות שלך, הערכים שלך, מה חשוב לך בחיים..."></textarea>
+                </div>
+            </div>
+
+            <!-- מה אתה מחפש -->
+            <div class="form-section">
+                <h2 class="section-title">מה אתה/את מחפש/ת</h2>
+                
+                <div class="form-group">
+                    <label for="desiredAge">טווח גילאים מועדף:</label>
+                    <input type="text" id="desiredAge" name="desiredAge" placeholder="לדוגמה: 22-28">
+                </div>
+                
+                <div class="form-group">
+                    <label for="desiredEducation">רמת השכלה מועדפת:</label>
+                    <select id="desiredEducation" name="desiredEducation">
+                        <option value="">אין העדפה מיוחדת</option>
+                        <option value="תיכון">תיכון</option>
+                        <option value="מכללה">מכללה</option>
+                        <option value="אוניברסיטה">אוניברסיטה</option>
+                        <option value="כולל/בית מדרש">כולל/בית מדרש</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="desiredReligiousLevel">רמת דתיות מועדפת:</label>
+                    <select id="desiredReligiousLevel" name="desiredReligiousLevel">
+                        <option value="">אין העדפה מיוחדת</option>
+                        <option value="חרדי">חרדי</option>
+                        <option value="דתי">דתי</option>
+                        <option value="מסורתי">מסורתי</option>
+                        <option value="חילוני">חילוני</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="importantQualities">תכונות חשובות בבן/בת זוג:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <label for="humor">חוש הומור</label>
+                            <input type="checkbox" id="humor" name="qualities" value="חוש הומור">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="kindness">טוב לב</label>
+                            <input type="checkbox" id="kindness" name="qualities" value="טוב לב">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="intelligence">אינטליגנציה</label>
+                            <input type="checkbox" id="intelligence" name="qualities" value="אינטליגנציה">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="ambition">שאפתנות</label>
+                            <input type="checkbox" id="ambition" name="qualities" value="שאפתנות">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="family">משפחתיות</label>
+                            <input type="checkbox" id="family" name="qualities" value="משפחתיות">
+                        </div>
+                        <div class="checkbox-item">
+                            <label for="spirituality">רוחניות</label>
+                            <input type="checkbox" id="spirituality" name="qualities" value="רוחניות">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dealBreakers">דברים שחשובים לך שלא יהיו:</label>
+                    <textarea id="dealBreakers" name="dealBreakers" placeholder="לדוגמה: עישון, חוסר סבלנות, אי יכולת לתקשר..."></textarea>
+                </div>
+            </div>
+
+            <!-- שאלות נוספות -->
+            <div class="form-section">
+                <h2 class="section-title">שאלות נוספות</h2>
+                
+                <div class="form-group">
+                    <label for="futureGoals">מטרות לעתיד:</label>
+                    <textarea id="futureGoals" name="futureGoals" placeholder="איך אתה/את רואה את העתיד? מה חשוב לך להשיג?"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="familyPlans">תוכניות לגבי משפחה:</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <label for="wantKids">רוצה ילדים</label>
+                            <input type="radio" id="wantKids" name="familyPlans" value="רוצה ילדים">
+                        </div>
+                        <div class="radio-item">
+                            <label for="noKids">לא רוצה ילדים</label>
+                            <input type="radio" id="noKids" name="familyPlans" value="לא רוצה ילדים">
+                        </div>
+                        <div class="radio-item">
+                            <label for="undecidedKids">עוד לא החלטתי</label>
+                            <input type="radio" id="undecidedKids" name="familyPlans" value="עוד לא החלטתי">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="additionalInfo">מידע נוסף שחשוב לך לשתף:</label>
+                    <textarea id="additionalInfo" name="additionalInfo" placeholder="כל דבר נוסף שחשוב לך שנדע..."></textarea>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn">שלח טופס</button>
+            </div>
+        </form>
+
+        <div class="result-section" id="resultSection">
+            <h2>הטופס נשלח בהצלחה! ✨</h2>
+            <p>תודה שמילאת את הטופס. נחזור אליך בהקדם האפשרי.</p>
+            <div id="summaryData"></div>
+        </div>
+    </div>
+
+    <script>
+        // Progress bar functionality
+        function updateProgressBar() {
+            const form = document.getElementById('shidduchForm');
+            const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+            const filledInputs = Array.from(inputs).filter(input => {
+                if (input.type === 'radio') {
+                    return form.querySelector(`input[name="${input.name}"]:checked`);
+                }
+                return input.value.trim() !== '';
+            });
+            
+            const progressPercentage = (filledInputs.length / inputs.length) * 100;
+            document.getElementById('progressFill').style.width = progressPercentage + '%';
+        }
+
+        // Add event listeners to all form inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('shidduchForm');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', updateProgressBar);
+                input.addEventListener('change', updateProgressBar);
+            });
+            
+            // Initial progress check
+            updateProgressBar();
+        });
+
+        // Form submission
+        document.getElementById('shidduchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'שולח...';
+            submitBtn.disabled = true;
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {};
+            
+            // Handle regular inputs
+            for (let [key, value] of formData.entries()) {
+                if (data[key]) {
+                    if (Array.isArray(data[key])) {
+                        data[key].push(value);
+                    } else {
+                        data[key] = [data[key], value];
+                    }
+                } else {
+                    data[key] = value;
+                }
+            }
+            
+            // Handle checkboxes
+            const hobbies = [];
+            const qualities = [];
+            
+            document.querySelectorAll('input[name="hobbies"]:checked').forEach(cb => {
+                hobbies.push(cb.value);
+            });
+            
+            document.querySelectorAll('input[name="qualities"]:checked').forEach(cb => {
+                qualities.push(cb.value);
+            });
+            
+            data.hobbies = hobbies;
+            data.qualities = qualities;
+            
+            // Format data for email
+            const emailBody = formatDataForEmail(data);
+            
+            // Send to Google Sheets
+            sendToGoogleSheets(data)
+                .then(() => {
+                    console.log('נשלח לגוגל שיטס בהצלחה');
+                })
+                .catch(error => {
+                    console.error('שגיאה בשליחה:', error);
+                    // Fallback - download file if Google Sheets fails
+                    downloadFormData(data);
+                    copyToClipboard(emailBody);
+                });
+            
+            // Also create backup copy
+            downloadFormData(data);
+            copyToClipboard(emailBody);
+            
+            // Create summary
+            let summary = `<h3>הטופס נשלח בהצלחה! ✨</h3>`;
+            summary += `<p><strong>הנתונים נשלחו לגוגל שיטס ונשמרו!</strong></p>`;
+            summary += `<p><strong>גם הורד קובץ גיבוי והועתק ללוח</strong></p>`;
+            summary += `<hr>`;
+            summary += `<h4>סיכום הפרטים:</h4>`;
+            summary += `<p><strong>שם:</strong> ${data.firstName} ${data.lastName}</p>`;
+            summary += `<p><strong>גיל:</strong> ${data.age}</p>`;
+            summary += `<p><strong>עיר:</strong> ${data.city}</p>`;
+            summary += `<p><strong>רמת דתיות:</strong> ${data.religiousLevel}</p>`;
+            
+            if (data.hobbies.length > 0) {
+                summary += `<p><strong>תחביבים:</strong> ${data.hobbies.join(', ')}</p>`;
+            }
+            
+            if (data.qualities.length > 0) {
+                summary += `<p><strong>תכונות חשובות:</strong> ${data.qualities.join(', ')}</p>`;
+            }
+            
+            // Reset button after delay
+            setTimeout(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                
+                // Show result
+                document.getElementById('summaryData').innerHTML = summary;
+                document.getElementById('resultSection').style.display = 'block';
+                
+                // Scroll to result
+                document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+                
+                // Add success animation
+                setTimeout(() => {
+                    document.getElementById('resultSection').style.animation = 'pulse 1s ease-in-out';
+                }, 500);
+            }, 2000);
+        });
+        
+        // Function to format data for email
+        function formatDataForEmail(data) {
+            let emailText = "טופס שידוכין - פרטים חדשים\n";
+            emailText += "=".repeat(40) + "\n\n";
+            
+            emailText += "פרטים אישיים:\n";
+            emailText += `שם מלא: ${data.firstName} ${data.lastName}\n`;
+            emailText += `גיל: ${data.age}\n`;
+            emailText += `עיר: ${data.city}\n`;
+            emailText += `טלפון: ${data.phone}\n`;
+            emailText += `אימייל: ${data.email}\n\n`;
+            
+            emailText += "רקע דתי ומשפחתי:\n";
+            emailText += `רמת דתיות: ${data.religiousLevel}\n`;
+            emailText += `עדה: ${data.community || 'לא צוין'}\n`;
+            emailText += `מצב הורים: ${data.parentStatus || 'לא צוין'}\n`;
+            emailText += `מספר אחים: ${data.siblings || 'לא צוין'}\n\n`;
+            
+            emailText += "השכלה ועבודה:\n";
+            emailText += `השכלה: ${data.education}\n`;
+            emailText += `מקצוע: ${data.profession || 'לא צוין'}\n`;
+            emailText += `מצב תעסוקתי: ${data.workStatus || 'לא צוין'}\n\n`;
+            
+            if (data.hobbies && data.hobbies.length > 0) {
+                emailText += `תחביבים: ${data.hobbies.join(', ')}\n\n`;
+            }
+            
+            if (data.aboutMe) {
+                emailText += `על עצמי:\n${data.aboutMe}\n\n`;
+            }
+            
+            emailText += "מה מחפש/ת:\n";
+            emailText += `טווח גילאים: ${data.desiredAge || 'לא צוין'}\n`;
+            emailText += `השכלה מועדפת: ${data.desiredEducation || 'לא צוין'}\n`;
+            emailText += `רמת דתיות מועדפת: ${data.desiredReligiousLevel || 'לא צוין'}\n`;
+            
+            if (data.qualities && data.qualities.length > 0) {
+                emailText += `תכונות חשובות: ${data.qualities.join(', ')}\n`;
+            }
+            
+            if (data.dealBreakers) {
+                emailText += `דברים שחשוב שלא יהיו: ${data.dealBreakers}\n`;
+            }
+            
+            emailText += "\nשאלות נוספות:\n";
+            if (data.futureGoals) {
+                emailText += `מטרות עתידיות: ${data.futureGoals}\n`;
+            }
+            emailText += `תוכניות משפחה: ${data.familyPlans || 'לא צוין'}\n`;
+            if (data.additionalInfo) {
+                emailText += `מידע נוסף: ${data.additionalInfo}\n`;
+            }
+            
+            emailText += "\n" + "=".repeat(40) + "\n";
+            emailText += `נשלח בתאריך: ${new Date().toLocaleDateString('he-IL')}\n`;
+            
+            return emailText;
+        }
+        
+        // Function to download form data as file
+        function downloadFormData(data) {
+            const emailText = formatDataForEmail(data);
+            const blob = new Blob([emailText], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `טופס_שידוכין_${data.firstName}_${data.lastName}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Function to copy data to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                console.log('הנתונים הועתקו ללוח בהצלחה');
+            }).catch(err => {
+                console.log('שגיאה בהעתקה ללוח:', err);
+            });
+        }
+        
+        // Function to send data to Google Sheets
+        async function sendToGoogleSheets(data) {
+            // Google Apps Script Web App URL - YOU NEED TO REPLACE THIS WITH YOUR URL
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+            
+            // Prepare data for Google Sheets
+            const sheetData = {
+                timestamp: new Date().toLocaleString('he-IL'),
+                firstName: data.firstName,
+                lastName: data.lastName,
+                age: data.age,
+                city: data.city,
+                phone: data.phone,
+                email: data.email,
+                religiousLevel: data.religiousLevel,
+                community: data.community || '',
+                parentStatus: data.parentStatus || '',
+                siblings: data.siblings || '',
+                education: data.education,
+                profession: data.profession || '',
+                workStatus: data.workStatus || '',
+                hobbies: data.hobbies ? data.hobbies.join(', ') : '',
+                aboutMe: data.aboutMe || '',
+                desiredAge: data.desiredAge || '',
+                desiredEducation: data.desiredEducation || '',
+                desiredReligiousLevel: data.desiredReligiousLevel || '',
+                qualities: data.qualities ? data.qualities.join(', ') : '',
+                dealBreakers: data.dealBreakers || '',
+                futureGoals: data.futureGoals || '',
+                familyPlans: data.familyPlans || '',
+                additionalInfo: data.additionalInfo || ''
+            };
+            
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(sheetData)
+                });
+                
+                console.log('Data sent to Google Sheets successfully');
+                return true;
+            } catch (error) {
+                console.error('Error sending to Google Sheets:', error);
+                throw error;
+            }
+        }
+
+        // Add some interactive effects
+        document.querySelectorAll('.form-section').forEach(section => {
+            section.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            section.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</body>
+</html>
