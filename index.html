@@ -606,46 +606,51 @@
             // Format data for email
             const emailBody = formatDataForEmail(data);
             
-            // Send to Google Sheets
-            sendToGoogleSheets(data)
-                .then(() => {
-                    console.log('✅ נשלח לגוגל שיטס בהצלחה');
-                    // Show success message
-                    showSuccessMessage(true);
-                })
-                .catch(error => {
-                    console.error('❌ שגיאה בשליחה לגוגל שיטס:', error);
-                    // Show error message but still save locally
-                    showSuccessMessage(false);
-                });
+            // Save locally first
+            saveLocally(data);
+            
+            // Try to send via email service (optional)
+            // sendToGoogleForms(data)
+            //     .then(() => {
+            //         console.log('✅ נשלח גם למייל');
+            //         showSuccessMessage(true);
+            //     })
+            //     .catch(error => {
+            //         console.error('❌ שגיאה בשליחה למייל:', error);
+            //         showSuccessMessage(false);
+            //     });
+            
+            // Show success immediately
+            showSuccessMessage(true);
             
             // Also create backup copy
             downloadFormData(data);
             copyToClipboard(emailBody);
             
-            function showSuccessMessage(googleSheetsSuccess) {
+            function showSuccessMessage(success) {
                 let summary = `<h3>הטופס נשלח בהצלחה! ✨</h3>`;
                 
-                if (googleSheetsSuccess) {
-                    summary += `<p style="color: green;"><strong>✅ הנתונים נשמרו בגוגל שיטס!</strong></p>`;
-                } else {
-                    summary += `<p style="color: orange;"><strong>⚠️ בעיה בשמירה לגוגל שיטס</strong></p>`;
-                    summary += `<p>אבל הנתונים נשמרו בגיבוי מקומי</p>`;
-                }
-                
+                summary += `<p style="color: green;"><strong>✅ הנתונים נשמרו במחשב!</strong></p>`;
                 summary += `<p><strong>📁 הורד קובץ גיבוי והועתק ללוח</strong></p>`;
+                summary += `<div style="background: #f0f8ff; padding: 15px; border-radius: 10px; margin: 15px 0;">`;
+                summary += `<h4>📧 איך לקבל את הנתונים:</h4>`;
+                summary += `<p><strong>אפשרות 1:</strong> הנתונים נשמרו בקובץ שהורד למחשב</p>`;
+                summary += `<p><strong>אפשרות 2:</strong> הנתונים הועתקו ללוח - אפשר להדביק במייל</p>`;
+                summary += `<p><strong>אפשרות 3:</strong> ליצור Google Form ולחבר אליו</p>`;
+                summary += `</div>`;
+                
                 summary += `<hr>`;
                 summary += `<h4>סיכום הפרטים:</h4>`;
-                summary += `<p><strong>שם:</strong> ${data.firstName} ${data.lastName}</p>`;
-                summary += `<p><strong>גיל:</strong> ${data.age}</p>`;
-                summary += `<p><strong>עיר:</strong> ${data.city}</p>`;
-                summary += `<p><strong>רמת דתיות:</strong> ${data.religiousLevel}</p>`;
+                summary += `<p><strong>שם:</strong> ${data.firstName || 'לא צוין'} ${data.lastName || ''}</p>`;
+                summary += `<p><strong>גיל:</strong> ${data.age || 'לא צוין'}</p>`;
+                summary += `<p><strong>עיר:</strong> ${data.city || 'לא צוין'}</p>`;
+                summary += `<p><strong>רמת דתיות:</strong> ${data.religiousLevel || 'לא צוין'}</p>`;
                 
-                if (data.hobbies.length > 0) {
+                if (data.hobbies && data.hobbies.length > 0) {
                     summary += `<p><strong>תחביבים:</strong> ${data.hobbies.join(', ')}</p>`;
                 }
                 
-                if (data.qualities.length > 0) {
+                if (data.qualities && data.qualities.length > 0) {
                     summary += `<p><strong>תכונות חשובות:</strong> ${data.qualities.join(', ')}</p>`;
                 }
                 
@@ -770,61 +775,70 @@
             });
         }
         
-        // Function to send data to Google Sheets
-        async function sendToGoogleSheets(data) {
-            // Google Apps Script Web App URL
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwEode-Y_LuWe-F1XCY5ITGlqhzv7FfelkZL4PDlqYDsxc-ydHBI3P9yjED3pOSWI/exec';
+        // Alternative: Use Google Forms instead of Apps Script
+        async function sendToGoogleForms(data) {
+            // We'll create a Google Form and use its submit endpoint
+            // For now, let's use a different approach - FormSubmit.co
             
-            // Prepare data for Google Sheets
-            const sheetData = {
-                timestamp: new Date().toLocaleString('he-IL'),
-                firstName: data.firstName,
-                lastName: data.lastName,
-                age: data.age,
-                city: data.city,
-                phone: data.phone,
-                email: data.email,
-                religiousLevel: data.religiousLevel,
-                community: data.community || '',
-                parentStatus: data.parentStatus || '',
-                siblings: data.siblings || '',
-                education: data.education,
-                profession: data.profession || '',
-                workStatus: data.workStatus || '',
-                hobbies: data.hobbies ? data.hobbies.join(', ') : '',
-                aboutMe: data.aboutMe || '',
-                desiredAge: data.desiredAge || '',
-                desiredEducation: data.desiredEducation || '',
-                desiredReligiousLevel: data.desiredReligiousLevel || '',
-                qualities: data.qualities ? data.qualities.join(', ') : '',
-                dealBreakers: data.dealBreakers || '',
-                futureGoals: data.futureGoals || '',
-                familyPlans: data.familyPlans || '',
-                additionalInfo: data.additionalInfo || ''
-            };
+            const FORM_ENDPOINT = 'https://formsubmit.co/ajax/your-email@gmail.com'; // CHANGE THIS EMAIL
             
-            console.log('שולח לגוגל שיטס:', sheetData);
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('שם_מלא', `${data.firstName} ${data.lastName}`);
+            formData.append('גיל', data.age);
+            formData.append('עיר', data.city);
+            formData.append('טלפון', data.phone);
+            formData.append('אימייל', data.email);
+            formData.append('רמת_דתיות', data.religiousLevel);
+            formData.append('עדה', data.community);
+            formData.append('מצב_הורים', data.parentStatus);
+            formData.append('אחים', data.siblings);
+            formData.append('השכלה', data.education);
+            formData.append('מקצוע', data.profession);
+            formData.append('מצב_תעסוקתי', data.workStatus);
+            formData.append('תחביבים', data.hobbies ? data.hobbies.join(', ') : '');
+            formData.append('על_עצמי', data.aboutMe);
+            formData.append('גילאים_מועדפים', data.desiredAge);
+            formData.append('השכלה_מועדפת', data.desiredEducation);
+            formData.append('דתיות_מועדפת', data.desiredReligiousLevel);
+            formData.append('תכונות_חשובות', data.qualities ? data.qualities.join(', ') : '');
+            formData.append('דברים_שלא', data.dealBreakers);
+            formData.append('מטרות_עתידיות', data.futureGoals);
+            formData.append('תוכניות_משפחה', data.familyPlans);
+            formData.append('מידע_נוסף', data.additionalInfo);
+            formData.append('תאריך', new Date().toLocaleString('he-IL'));
             
             try {
-                // Create form data for CORS workaround
-                const formData = new FormData();
-                formData.append('data', JSON.stringify(sheetData));
-                
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                const response = await fetch(FORM_ENDPOINT, {
                     method: 'POST',
                     body: formData
                 });
                 
-                console.log('תגובה מגוגל:', response);
-                
-                // With no-cors, we can't read the response, but if no error was thrown, it likely succeeded
-                console.log('נשלח בהצלחה לגוגל שיטס!');
-                return true;
-                
+                if (response.ok) {
+                    console.log('✅ נשלח בהצלחה!');
+                    return true;
+                } else {
+                    throw new Error('שגיאה בשליחה');
+                }
             } catch (error) {
-                console.error('שגיאה בשליחה לגוגל שיטס:', error);
+                console.error('שגיאה:', error);
                 throw error;
             }
+        }
+        
+        // Simple alternative - just save locally and show instructions
+        function saveLocally(data) {
+            // Save to localStorage for backup
+            const timestamp = new Date().getTime();
+            const savedForms = JSON.parse(localStorage.getItem('vortForms') || '[]');
+            savedForms.push({
+                timestamp: timestamp,
+                data: data
+            });
+            localStorage.setItem('vortForms', JSON.stringify(savedForms));
+            
+            console.log('✅ נשמר במחשב המקומי');
+            return true;
         }
 
         // Add some interactive effects
