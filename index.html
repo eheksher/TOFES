@@ -606,18 +606,58 @@
             // Send to Google Sheets
             sendToGoogleSheets(data)
                 .then(() => {
-                    console.log('נשלח לגוגל שיטס בהצלחה');
+                    console.log('✅ נשלח לגוגל שיטס בהצלחה');
+                    // Show success message
+                    showSuccessMessage(true);
                 })
                 .catch(error => {
-                    console.error('שגיאה בשליחה:', error);
-                    // Fallback - download file if Google Sheets fails
-                    downloadFormData(data);
-                    copyToClipboard(emailBody);
+                    console.error('❌ שגיאה בשליחה לגוגל שיטס:', error);
+                    // Show error message but still save locally
+                    showSuccessMessage(false);
                 });
             
             // Also create backup copy
             downloadFormData(data);
             copyToClipboard(emailBody);
+            
+            function showSuccessMessage(googleSheetsSuccess) {
+                let summary = `<h3>הטופס נשלח בהצלחה! ✨</h3>`;
+                
+                if (googleSheetsSuccess) {
+                    summary += `<p style="color: green;"><strong>✅ הנתונים נשמרו בגוגל שיטס!</strong></p>`;
+                } else {
+                    summary += `<p style="color: orange;"><strong>⚠️ בעיה בשמירה לגוגל שיטס</strong></p>`;
+                    summary += `<p>אבל הנתונים נשמרו בגיבוי מקומי</p>`;
+                }
+                
+                summary += `<p><strong>📁 הורד קובץ גיבוי והועתק ללוח</strong></p>`;
+                summary += `<hr>`;
+                summary += `<h4>סיכום הפרטים:</h4>`;
+                summary += `<p><strong>שם:</strong> ${data.firstName} ${data.lastName}</p>`;
+                summary += `<p><strong>גיל:</strong> ${data.age}</p>`;
+                summary += `<p><strong>עיר:</strong> ${data.city}</p>`;
+                summary += `<p><strong>רמת דתיות:</strong> ${data.religiousLevel}</p>`;
+                
+                if (data.hobbies.length > 0) {
+                    summary += `<p><strong>תחביבים:</strong> ${data.hobbies.join(', ')}</p>`;
+                }
+                
+                if (data.qualities.length > 0) {
+                    summary += `<p><strong>תכונות חשובות:</strong> ${data.qualities.join(', ')}</p>`;
+                }
+                
+                // Show result
+                document.getElementById('summaryData').innerHTML = summary;
+                document.getElementById('resultSection').style.display = 'block';
+                
+                // Scroll to result
+                document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+                
+                // Add success animation
+                setTimeout(() => {
+                    document.getElementById('resultSection').style.animation = 'pulse 1s ease-in-out';
+                }, 500);
+            }
             
             // Create summary
             let summary = `<h3>הטופס נשלח בהצלחה! ✨</h3>`;
@@ -642,18 +682,6 @@
             setTimeout(() => {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
-                
-                // Show result
-                document.getElementById('summaryData').innerHTML = summary;
-                document.getElementById('resultSection').style.display = 'block';
-                
-                // Scroll to result
-                document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
-                
-                // Add success animation
-                setTimeout(() => {
-                    document.getElementById('resultSection').style.animation = 'pulse 1s ease-in-out';
-                }, 500);
             }, 2000);
         });
         
@@ -772,20 +800,28 @@
                 additionalInfo: data.additionalInfo || ''
             };
             
+            console.log('שולח לגוגל שיטס:', sheetData);
+            
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(sheetData)
                 });
                 
-                console.log('Data sent to Google Sheets successfully');
-                return true;
+                console.log('תגובה מגוגל:', response);
+                
+                if (response.ok) {
+                    console.log('נשלח בהצלחה לגוגל שיטס!');
+                    return true;
+                } else {
+                    console.error('שגיאה בתגובה:', response.status, response.statusText);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
             } catch (error) {
-                console.error('Error sending to Google Sheets:', error);
+                console.error('שגיאה בשליחה לגוגל שיטס:', error);
                 throw error;
             }
         }
